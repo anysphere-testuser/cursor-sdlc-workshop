@@ -59,6 +59,27 @@
       margin-bottom: 2rem;
       box-shadow: 0 4px 20px rgba(184, 208, 232, 0.35);
     }
+    /* Breathe in: circle grows from small to large */
+    .breath-visual.inhale {
+      animation: growCircle 4s ease-in-out forwards;
+    }
+    /* Hold: circle stays at full size */
+    .breath-visual.hold {
+      transform: scale(2);
+      background-color: rgba(200, 192, 224, 0.6);
+    }
+    /* Breathe out: circle shrinks from large to small */
+    .breath-visual.exhale {
+      animation: shrinkCircle 4s ease-in-out forwards;
+    }
+    @keyframes growCircle {
+      from { transform: scale(1); }
+      to   { transform: scale(2); }
+    }
+    @keyframes shrinkCircle {
+      from { transform: scale(2); }
+      to   { transform: scale(1); }
+    }
     .pattern-selector {
       display: flex;
       gap: 0.5rem;
@@ -168,6 +189,7 @@
     const cueEl = document.getElementById('cue');
     const startBtn = document.getElementById('start');
     const stopBtn = document.getElementById('stop');
+    const breathEl = document.getElementById('breath-visual');
     const patternBtns = document.querySelectorAll('.pattern-btn');
     const presetBtns = document.querySelectorAll('.preset-btn');
 
@@ -255,6 +277,17 @@
       var phase = phases[phaseIndex];
       cueEl.textContent = phase.label;
 
+      // Animate the breathing circle
+      breathEl.classList.remove('inhale', 'hold', 'exhale');
+      void breathEl.offsetWidth;
+      if (phase.label === 'Breathe in') {
+        breathEl.classList.add('inhale');
+      } else if (phase.label === 'Hold') {
+        breathEl.classList.add('hold');
+      } else if (phase.label === 'Breathe out') {
+        breathEl.classList.add('exhale');
+      }
+
       timeoutId = setTimeout(function() {
         var next = (phaseIndex + 1) % phases.length;
         
@@ -304,6 +337,9 @@
       stopBtn.disabled = true;
       patternBtns.forEach(btn => { btn.disabled = false; });
       presetBtns.forEach(btn => { btn.disabled = false; });
+      
+      // Reset the breathing circle animation
+      breathEl.classList.remove('inhale', 'hold', 'exhale');
       
       // Hide cycle counter but keep total visible (Jesse's feature)
       cycleCounterEl.style.display = 'none';
